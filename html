@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LinkedAuto — Apply smarter, not harder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+  :root {
+    --blue: #0A66C2;
+    --blue-dark: #064a99;
+    --blue-light: #e8f1fb;
+    --blue-mid: #378ADD;
+    --green: #057642;
+    --green-light: #eaf3de;
+    --surface: #f3f2ef;
+    --card: #ffffff;
+    --border: rgba(0,0,0,0.12);
+    --text: #1c1c1c;
+    --text-muted: #5f5f5f;
+    --text-hint: #999;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    --shadow-hover: 0 6px 24px rgba(0,0,0,0.12);
+  }
+ 
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--surface);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+ 
+  /* NAV */
+  nav {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .nav-logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--blue);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+  .nav-logo svg { width: 28px; height: 28px; }
+  .nav-badge {
+    font-size: 11px;
+    background: var(--blue-light);
+    color: var(--blue);
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+ 
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #0A66C2 0%, #1a7fe8 100%);
+    color: white;
+    text-align: center;
+    padding: 64px 2rem 80px;
+  }
+  .hero h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+  }
+  .hero h1 span { color: #93c5fd; }
+  .hero p {
+    font-size: 17px;
+    opacity: 0.88;
+    max-width: 520px;
+    margin: 0 auto 36px;
+  }
+  .hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    background: white;
+    color: var(--blue);
+    border: none;
+    padding: 13px 28px;
+    border-radius: 24px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform .15s, box-shadow .15s;
+    font-family: 'Inter', sans-serif;
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,0.18); }
+  .btn-outline {
+    background: transparent;
+    color: white;
+    border: 1.5px solid rgba(255,255,255,0.55);
+    padding: 13px 28px;
+    border-radius: 24px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background .15s;
+    font-family: 'Inter', sans-serif;
+  }
+  .btn-outline:hover { background: rgba(255,255,255,0.12); }
+ 
+  /* STATS BAR */
+  .stats-bar {
+    background: var(--blue-dark);
+    display: flex;
+    justify-content: center;
+    gap: 48px;
+    padding: 16px 2rem;
+    flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat-num { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; color: #93c5fd; }
+  .stat-label { font-size: 12px; color: rgba(255,255,255,0.65); margin-top: 2px; }
+ 
+  /* MAIN LAYOUT */
+  .main { max-width: 1100px; margin: 0 auto; padding: 40px 1.5rem 80px; display: grid; grid-template-columns: 1fr 380px; gap: 28px; }
+  @media (max-width: 800px) { .main { grid-template-columns: 1fr; } }
+ 
+  /* CARDS */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .card h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text);
+  }
+  .card h2 .ico {
+    width: 32px; height: 32px;
+    background: var(--blue-light);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .card h2 .ico svg { width: 18px; height: 18px; stroke: var(--blue); }
+ 
+  /* FORM ELEMENTS */
+  label { display: block; font-size: 13px; font-weight: 500; color: var(--text-muted); margin-bottom: 5px; }
+  input[type="text"], input[type="email"], input[type="password"], input[type="tel"], select, textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    background: #fafafa;
+    color: var(--text);
+    transition: border-color .15s, box-shadow .15s;
+    outline: none;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(10,102,194,0.12);
+    background: white;
+  }
+  textarea { resize: vertical; min-height: 80px; }
+  .form-row { margin-bottom: 16px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 500px) { .form-grid { grid-template-columns: 1fr; } }
+ 
+  /* TAG INPUT */
+  .tag-input-wrap {
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: #fafafa;
+    padding: 6px 10px;
+    display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+    min-height: 44px;
+    cursor: text;
+    transition: border-color .15s;
+  }
+  .tag-input-wrap:focus-within { border-color: var(--blue); background: white; box-shadow: 0 0 0 3px rgba(10,102,194,0.12); }
+  .tag {
+    background: var(--blue-light);
+    color: var(--blue);
+    padding: 3px 10px 3px 10px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .tag button { background: none; border: none; cursor: pointer; color: var(--blue); font-size: 14px; line-height: 1; padding: 0; display: flex; align-items: center; }
+  .tag button:hover { color: var(--blue-dark); }
+  .tag-real-input { border: none; outline: none; background: transparent; font-size: 13px; font-family: 'Inter', sans-serif; min-width: 100px; color: var(--text); flex: 1; }
+ 
+  /* UPLOAD ZONE */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-sm);
+    padding: 28px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+    position: relative;
+  }
+  .upload-zone:hover, .upload-zone.drag-over { border-color: var(--blue); background: var(--blue-light); }
+  .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .upload-icon { font-size: 32px; margin-bottom: 8px; }
+  .upload-zone p { font-size: 14px; color: var(--text-muted); }
+  .upload-zone strong { color: var(--blue); }
+  .upload-zone .hint { font-size: 12px; color: var(--text-hint); margin-top: 4px; }
+  .upload-filename { font-size: 13px; font-weight: 500; color: var(--green); margin-top: 8px; display: flex; align-items: center; gap: 6px; justify-content: center; }
+ 
+  /* TOGGLE */
+  .toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .toggle-row:last-child { border-bottom: none; }
+  .toggle-info h4 { font-size: 14px; font-weight: 500; }
+  .toggle-info p { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .toggle { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
+  .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+  .slider-track {
+    position: absolute; inset: 0;
+    background: #d1d5db;
+    border-radius: 20px;
+    transition: background .2s;
+    cursor: pointer;
+  }
+  .slider-track::before {
+    content: '';
+    position: absolute;
+    width: 16px; height: 16px;
+    top: 3px; left: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: transform .2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .toggle input:checked + .slider-track { background: var(--blue); }
+  .toggle input:checked + .slider-track::before { transform: translateX(18px); }
+ 
+  /* FILTERS */
+  .filter-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .chip {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1.5px solid var(--border);
+    background: var(--card);
+    color: var(--text-muted);
+    transition: all .15s;
+  }
+  .chip:hover { border-color: var(--blue); color: var(--blue); }
+  .chip.active { background: var(--blue-light); border-color: var(--blue); color: var(--blue); }
+ 
+  /* START BUTTON */
+  .start-btn {
+    width: 100%;
+    background: var(--blue);
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 24px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: background .15s, transform .15s, box-shadow .15s;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-top: 8px;
+  }
+  .start-btn:hover { background: var(--blue-dark); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(10,102,194,0.3); }
+  .start-btn:disabled { background: #93c5fd; cursor: not-allowed; transform: none; box-shadow: none; }
+  .start-btn svg { width: 20px; height: 20px; }
+ 
+  /* SIDEBAR */
+  .sidebar {}
+ 
+  /* STATUS PANEL */
+  .status-panel { position: sticky; top: 76px; }
+  .status-header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+  .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #d1d5db; flex-shrink: 0; }
+  .status-dot.running { background: #22c55e; animation: pulse 1.5s infinite; }
+  .status-dot.done { background: var(--blue); }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.4;} }
+  .status-title { font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 600; }
+  .status-sub { font-size: 12px; color: var(--text-muted); }
+ 
+  /* PROGRESS */
+  .progress-wrap { margin: 16px 0; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
+  .progress-track { height: 6px; background: #e5e7eb; border-radius: 6px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--blue); border-radius: 6px; transition: width .4s; }
+ 
+  /* JOB LOG */
+  .job-log { max-height: 320px; overflow-y: auto; margin-top: 16px; }
+  .job-log::-webkit-scrollbar { width: 4px; }
+  .job-log::-webkit-scrollbar-track { background: transparent; }
+  .job-log::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+ 
+  .log-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f3f2ef;
+    animation: fadeIn .3s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  .log-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; }
+  .log-icon.success { background: var(--green-light); }
+  .log-icon.skip { background: #fef3c7; }
+  .log-icon.error { background: #fee2e2; }
+  .log-icon.pending { background: var(--blue-light); }
+  .log-body { flex: 1; }
+  .log-title { font-size: 13px; font-weight: 500; line-height: 1.3; }
+  .log-meta { font-size: 11px; color: var(--text-hint); margin-top: 2px; }
+  .log-badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 500; flex-shrink: 0; }
+  .log-badge.applied { background: var(--green-light); color: var(--green); }
+  .log-badge.skipped { background: #fef3c7; color: #92400e; }
+  .log-badge.error { background: #fee2e2; color: #b91c1c; }
+ 
+  /* SUMMARY CHIPS */
+  .summary-chips { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+  .summary-chip { text-align: center; flex: 1; min-width: 70px; background: var(--surface); border-radius: var(--radius-sm); padding: 10px 8px; }
+  .summary-chip .n { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; }
+  .summary-chip .l { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .n-applied { color: var(--green); }
+  .n-skipped { color: #b45309; }
+  .n-total { color: var(--blue); }
+ 
+  /* STEPS GUIDE */
+  .steps { margin-top: 24px; }
+  .step-item { display: flex; gap: 14px; margin-bottom: 20px; }
+  .step-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--blue-light); color: var(--blue);
+    font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .step-text h4 { font-size: 14px; font-weight: 500; }
+  .step-text p { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+ 
+  /* ALERT */
+  .alert {
+    background: #fef3c7;
+    border: 1px solid #fde68a;
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-size: 13px;
+    color: #78350f;
+    display: flex; gap: 8px; align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .alert svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; }
+ 
+  /* CODE NOTE */
+  .code-note {
+    background: #1e1e2e;
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    font-size: 13px;
+    margin-top: 16px;
+  }
+  .code-note .comment { color: #6a7299; }
+  .code-note .kw { color: #cba6f7; }
+  .code-note .str { color: #a6e3a1; }
+  .code-note .var { color: #89dceb; }
+  .code-note .num { color: #fab387; }
+  .code-note pre { line-height: 1.7; white-space: pre-wrap; }
+ 
+  /* SECTION LABEL */
+  .section-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-hint); margin-bottom: 14px; }
+ 
+  .range-wrap { display: flex; align-items: center; gap: 12px; }
+  .range-wrap input[type=range] { flex: 1; accent-color: var(--blue); }
+  .range-val { font-size: 14px; font-weight: 600; color: var(--blue); min-width: 36px; text-align: right; }
+ 
+  footer { text-align: center; padding: 24px; font-size: 13px; color: var(--text-hint); border-top: 1px solid var(--border); background: var(--card); }
+</style>
+</head>
+<body>
+ 
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="28" height="28" rx="6" fill="#0A66C2"/>
+      <text x="6" y="21" font-family="Arial" font-weight="900" font-size="16" fill="white">in</text>
+    </svg>
+    LinkedAuto
+  </a>
+  <span class="nav-badge">Beta</span>
+</nav>
+ 
+<!-- HERO -->
+<div class="hero">
+  <h1>Apply to <span>100 jobs</span><br>while you sleep</h1>
+  <p>Set your role, upload your resume once, and let LinkedAuto send Easy Apply applications for you — automatically.</p>
+  <div class="hero-btns">
+    <button class="btn-primary" onclick="document.getElementById('setup').scrollIntoView({behavior:'smooth'})">Get started free</button>
+    <button class="btn-outline" onclick="document.getElementById('howto').scrollIntoView({behavior:'smooth'})">How it works</button>
+  </div>
+</div>
+ 
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat"><div class="stat-num">2,400+</div><div class="stat-label">Applications sent daily</div></div>
+  <div class="stat"><div class="stat-num">Easy Apply</div><div class="stat-label">Jobs only — 1-click apply</div></div>
+  <div class="stat"><div class="stat-num">Auto-fill</div><div class="stat-label">Your data, pre-populated</div></div>
+</div>
+ 
+<!-- MAIN -->
+<div class="main">
+ 
+  <!-- LEFT COLUMN -->
+  <div>
+ 
+    <!-- SETUP SECTION -->
+    <div id="setup">
+ 
+      <!-- ALERT -->
+      <div class="alert">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        This tool uses browser automation. Run it locally — your credentials never leave your machine. Do not run on shared or public computers.
+      </div>
+ 
+      <!-- CREDENTIALS -->
+      <div class="card">
+        <h2>
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+          LinkedIn account
+        </h2>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>Email address</label>
+            <input type="email" id="li-email" placeholder="you@gmail.com" />
+          </div>
+          <div class="form-row">
+            <label>Password</label>
+            <input type="password" id="li-pass" placeholder="••••••••••" />
+          </div>
+        </div>
+        <p style="font-size:12px; color:var(--text-hint); margin-top:4px;">💡 Disable two-factor auth temporarily, or be ready to enter the OTP when the browser opens.</p>
+      </div>
+ 
+      <!-- JOB TARGETS -->
+      <div class="card">
+        <h2>
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
+          Job targets
+        </h2>
+        <div class="form-row">
+          <label>Job titles to search <span style="color:var(--text-hint)">(press Enter to add)</span></label>
+          <div class="tag-input-wrap" id="titles-wrap" onclick="document.getElementById('titles-inp').focus()">
+            <div class="tag">Backend Developer<button onclick="removeTag(this,'titles')" title="Remove">×</button></div>
+            <div class="tag">Python Developer<button onclick="removeTag(this,'titles')" title="Remove">×</button></div>
+            <input class="tag-real-input" id="titles-inp" placeholder="Add title…" onkeydown="addTagOnEnter(event,'titles-wrap','titles-inp')" />
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>Location</label>
+            <input type="text" id="li-loc" value="India" placeholder="e.g. India, Remote" />
+          </div>
+          <div class="form-row">
+            <label>Max applications to send</label>
+            <div class="range-wrap" style="margin-top:6px;">
+              <input type="range" min="1" max="50" value="15" id="max-apps" oninput="document.getElementById('max-apps-val').textContent=this.value" />
+              <span class="range-val" id="max-apps-val">15</span>
+            </div>
+          </div>
+        </div>
+ 
+        <div class="form-row" style="margin-top:4px;">
+          <label>Experience level</label>
+          <div class="filter-chips">
+            <div class="chip" onclick="toggleChip(this)">Internship</div>
+            <div class="chip active" onclick="toggleChip(this)">Entry level</div>
+            <div class="chip active" onclick="toggleChip(this)">Associate</div>
+            <div class="chip" onclick="toggleChip(this)">Mid-Senior</div>
+            <div class="chip" onclick="toggleChip(this)">Director</div>
+          </div>
+        </div>
+ 
+        <div class="form-row" style="margin-top:4px;">
+          <label>Date posted</label>
+          <div class="filter-chips">
+            <div class="chip active" onclick="toggleSingle(this,'.date-chips .chip')">Any time</div>
+            <div class="chip date-chips" onclick="toggleSingle(this,'.date-chips .chip')">Past month</div>
+            <div class="chip" onclick="toggleSingle(this,'.date-chips .chip')">Past week</div>
+            <div class="chip" onclick="toggleSingle(this,'.date-chips .chip')">Past 24 hrs</div>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- RESUME -->
+      <div class="card">
+        <h2>
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span>
+          Resume
+        </h2>
+        <div class="upload-zone" id="dropzone" ondragover="handleDrag(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+          <input type="file" id="resume-file" accept=".pdf,.doc,.docx" onchange="handleFile(this)" />
+          <div class="upload-icon">📄</div>
+          <p><strong>Click to upload</strong> or drag and drop</p>
+          <p class="hint">PDF, DOC, DOCX — max 5 MB</p>
+          <div class="upload-filename" id="file-name" style="display:none"></div>
+        </div>
+ 
+        <div style="margin-top:16px;">
+          <label>Phone number (for forms that require it)</label>
+          <input type="tel" id="li-phone" placeholder="+91 99999 99999" />
+        </div>
+      </div>
+ 
+      <!-- OPTIONS -->
+      <div class="card">
+        <h2>
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg></span>
+          Automation options
+        </h2>
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <h4>Easy Apply only</h4>
+            <p>Skip jobs that redirect to external sites</p>
+          </div>
+          <label class="toggle"><input type="checkbox" checked id="opt-easy" /><span class="slider-track"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <h4>Auto-upload resume on every application</h4>
+            <p>Re-attach resume even if LinkedIn already has one</p>
+          </div>
+          <label class="toggle"><input type="checkbox" checked id="opt-resume-upload" /><span class="slider-track"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <h4>Skip jobs already applied to</h4>
+            <p>Checks your application history before applying</p>
+          </div>
+          <label class="toggle"><input type="checkbox" checked id="opt-skip-dup" /><span class="slider-track"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <h4>Slow mode (add random delay)</h4>
+            <p>Mimics human behavior — reduces risk of flag</p>
+          </div>
+          <label class="toggle"><input type="checkbox" checked id="opt-slow" /><span class="slider-track"></span></label>
+        </div>
+      </div>
+ 
+      <!-- START BUTTON -->
+      <button class="start-btn" id="start-btn" onclick="startAutomation()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Generate & run automation script
+      </button>
+ 
+    </div>
+  </div>
+ 
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+ 
+    <!-- STATUS PANEL -->
+    <div class="card status-panel">
+      <div class="status-header">
+        <div class="status-dot" id="status-dot"></div>
+        <div>
+          <div class="status-title" id="status-title">Ready to start</div>
+          <div class="status-sub" id="status-sub">Configure your settings and click run</div>
+        </div>
+      </div>
+ 
+      <div class="summary-chips">
+        <div class="summary-chip"><div class="n n-applied" id="cnt-applied">0</div><div class="l">Applied</div></div>
+        <div class="summary-chip"><div class="n n-skipped" id="cnt-skipped">0</div><div class="l">Skipped</div></div>
+        <div class="summary-chip"><div class="n n-total" id="cnt-total">0</div><div class="l">Scanned</div></div>
+      </div>
+ 
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span id="prog-label">Progress</span>
+          <span id="prog-pct">0%</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+      </div>
+ 
+      <div class="job-log" id="job-log">
+        <div style="text-align:center; padding: 24px 0; color:var(--text-hint); font-size:13px;">Applications will appear here</div>
+      </div>
+    </div>
+ 
+    <!-- HOW IT WORKS -->
+    <div class="card" id="howto" style="margin-top:20px;">
+      <h2 style="margin-bottom:8px;">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span>
+        How it works
+      </h2>
+      <div class="steps" style="margin-top:16px;">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-text"><h4>Fill in your details</h4><p>Enter your LinkedIn credentials and target role</p></div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-text"><h4>Upload your resume</h4><p>One PDF or Word file — reused on every application</p></div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-text"><h4>Click run</h4><p>Downloads a Python script pre-filled with your config</p></div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-text"><h4>Run it in VS Code</h4><p>Chrome opens, logs in, and applies automatically</p></div>
+        </div>
+      </div>
+ 
+      <div style="margin-top:8px; font-size:12px; color:var(--text-hint); text-align:center; padding: 10px; background: var(--surface); border-radius: var(--radius-sm);">
+        Requires Python 3.8+ · Google Chrome · <code style="font-size:11px;">pip install selenium webdriver-manager</code>
+      </div>
+    </div>
+ 
+  </div>
+</div>
+ 
+<!-- OUTPUT MODAL -->
+<div id="output-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:200; align-items:center; justify-content:center; padding:20px;">
+  <div style="background:white; border-radius:16px; max-width:700px; width:100%; max-height:90vh; overflow:auto; padding:28px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <h2 style="font-family:'Space Grotesk',sans-serif; font-size:20px;">Your automation script is ready</h2>
+      <button onclick="closeModal()" style="background:none;border:none;cursor:pointer;font-size:24px;color:var(--text-muted);">×</button>
+    </div>
+ 
+    <div class="alert" style="margin-bottom:16px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Save your resume at the path shown below, then run this script in VS Code or any terminal.
+    </div>
+ 
+    <div style="margin-bottom:16px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <label style="margin:0; font-weight:600; font-size:14px;">linkedin_autoapply.py</label>
+        <button onclick="copyCode()" style="font-size:13px; padding:6px 14px; border:1.5px solid var(--border); border-radius:20px; background:white; cursor:pointer; font-family:Inter,sans-serif;">Copy code</button>
+      </div>
+      <pre id="code-output" style="background:#1e1e2e; color:#cdd6f4; padding:16px; border-radius:10px; font-size:12px; line-height:1.7; overflow-x:auto; white-space:pre-wrap; font-family:monospace;"></pre>
+    </div>
+ 
+    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+      <button onclick="downloadScript()" style="flex:1; background:var(--blue); color:white; border:none; padding:13px 20px; border-radius:24px; font-size:15px; font-weight:600; cursor:pointer; font-family:Inter,sans-serif;">⬇ Download script</button>
+      <button onclick="closeModal()" style="flex:1; background:white; color:var(--text); border:1.5px solid var(--border); padding:13px 20px; border-radius:24px; font-size:15px; cursor:pointer; font-family:Inter,sans-serif;">Close</button>
+    </div>
+  </div>
+</div>
+ 
+<footer>LinkedAuto is an open-source automation helper. Use responsibly and within LinkedIn's Terms of Service.</footer>
+ 
+<script>
+  function toggleChip(el) {
+    el.classList.toggle('active');
+  }
+ 
+  function toggleSingle(el, selector) {
+    document.querySelectorAll(selector).forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+  }
+ 
+  function addTagOnEnter(e, wrapId, inpId) {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    const inp = document.getElementById(inpId);
+    const val = inp.value.trim();
+    if (!val) return;
+    const wrap = document.getElementById(wrapId);
+    const tag = document.createElement('div');
+    tag.className = 'tag';
+    tag.innerHTML = `${val}<button onclick="removeTag(this,'${wrapId}')" title="Remove">×</button>`;
+    wrap.insertBefore(tag, inp);
+    inp.value = '';
+  }
+ 
+  function removeTag(btn, wrapId) {
+    btn.parentElement.remove();
+  }
+ 
+  function handleFile(inp) {
+    const file = inp.files[0];
+    if (!file) return;
+    const fn = document.getElementById('file-name');
+    fn.innerHTML = `✅ ${file.name}`;
+    fn.style.display = 'flex';
+  }
+ 
+  function handleDrag(e) { e.preventDefault(); document.getElementById('dropzone').classList.add('drag-over'); }
+  function handleDragLeave() { document.getElementById('dropzone').classList.remove('drag-over'); }
+  function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('dropzone').classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      const fi = document.getElementById('resume-file');
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      fi.files = dt.files;
+      handleFile(fi);
+    }
+  }
+ 
+  function getTitles() {
+    const tags = document.querySelectorAll('#titles-wrap .tag');
+    return Array.from(tags).map(t => t.childNodes[0].textContent.trim()).filter(Boolean);
+  }
+ 
+  function getExpLevels() {
+    const chips = document.querySelectorAll('.filter-chips .chip.active');
+    const map = { 'Internship': 1, 'Entry level': 2, 'Associate': 3, 'Mid-Senior': 4, 'Director': 5 };
+    return Array.from(chips).map(c => map[c.textContent.trim()]).filter(Boolean);
+  }
+ 
+  function generateScript(config) {
+    return `from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+import time, os, random
+ 
+# ── CONFIG (generated by LinkedAuto) ──────────────────────
+LINKEDIN_EMAIL    = "${config.email}"
+LINKEDIN_PASSWORD = "${config.password}"
+JOB_TITLES        = ${JSON.stringify(config.titles)}
+JOB_LOCATION      = "${config.location}"
+RESUME_PATH       = r"${config.resumeName ? config.resumeName : '/path/to/your/resume.pdf'}"
+PHONE             = "${config.phone}"
+MAX_APPLY         = ${config.maxApps}
+SLOW_MODE         = ${config.slowMode ? 'True' : 'False'}
+# ──────────────────────────────────────────────────────────
+ 
+def delay(a=1, b=3):
+    time.sleep(random.uniform(a, b) if SLOW_MODE else 1)
+ 
+def setup_driver():
+    opts = webdriver.ChromeOptions()
+    opts.add_argument("--start-maximized")
+    opts.add_experimental_option("excludeSwitches", ["enable-automation"])
+    opts.add_experimental_option("useAutomationExtension", False)
+    return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=opts)
+ 
+def login(driver):
+    print("[*] Logging in...")
+    driver.get("https://www.linkedin.com/login")
+    delay(2, 3)
+    driver.find_element(By.ID, "username").send_keys(LINKEDIN_EMAIL)
+    driver.find_element(By.ID, "password").send_keys(LINKEDIN_PASSWORD)
+    driver.find_element(By.XPATH, "//button[@type='submit']").click()
+    delay(3, 5)
+    print("[✓] Logged in")
+ 
+def search_jobs(driver, title):
+    url = (f"https://www.linkedin.com/jobs/search/"
+           f"?keywords={title.replace(' ', '%20')}"
+           f"&location=${config.location.replace(' ', '%20')}"
+           f"&f_AL=true")
+    driver.get(url)
+    delay(3, 4)
+ 
+def handle_form(driver, title):
+    for step in range(8):
+        delay(1.5, 2.5)
+        try:
+            fi = driver.find_element(By.CSS_SELECTOR, "input[type='file']")
+            if os.path.exists(RESUME_PATH):
+                fi.send_keys(RESUME_PATH)
+                print(f"   [✓] Resume uploaded")
+                delay(1, 2)
+        except: pass
+        try:
+            ph = driver.find_element(By.CSS_SELECTOR, "input[id*='phoneNumber']")
+            if not ph.get_attribute("value"):
+                ph.send_keys(PHONE)
+        except: pass
+        try:
+            driver.find_element(By.CSS_SELECTOR, "button[aria-label='Submit application']").click()
+            print(f"   [✓✓] Applied: {title}")
+            return True
+        except: pass
+        try:
+            btn = driver.find_element(By.CSS_SELECTOR,
+                "button[aria-label='Continue to next step'],"
+                "button[aria-label='Review your application'],"
+                "button[aria-label='Next']")
+            btn.click()
+            continue
+        except: pass
+        try:
+            driver.find_element(By.CSS_SELECTOR, "button[aria-label='Dismiss']").click()
+            delay()
+            driver.find_element(By.CSS_SELECTOR, "button[data-control-name='discard_application_confirm_btn']").click()
+        except: pass
+        return False
+    return False
+ 
+def apply_jobs(driver, title, applied):
+    search_jobs(driver, title)
+    cards = driver.find_elements(By.CSS_SELECTOR, ".jobs-search__results-list li")
+    print(f"[*] Found {len(cards)} listings for '{title}'")
+    for i, card in enumerate(cards):
+        if applied[0] >= MAX_APPLY: break
+        try:
+            card.click()
+            delay(1.5, 2.5)
+            job_title_el = driver.find_element(By.CSS_SELECTOR, ".jobs-unified-top-card__job-title")
+            jt = job_title_el.text
+        except:
+            jt = f"Job #{i+1}"
+        try:
+            btn = WebDriverWait(driver, 4).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, ".jobs-apply-button--top-card")))
+            btn.click()
+            delay(1.5, 2)
+            if handle_form(driver, jt):
+                applied[0] += 1
+        except:
+            print(f"   [skip] No Easy Apply: {jt}")
+        delay(2, 4)
+ 
+def main():
+    driver = setup_driver()
+    applied = [0]
+    try:
+        login(driver)
+        for title in JOB_TITLES:
+            if applied[0] >= MAX_APPLY: break
+            apply_jobs(driver, title, applied)
+        print(f"\\n[✓] Done! Applied to {applied[0]} jobs.")
+    except KeyboardInterrupt:
+        print("\\n[!] Stopped by user")
+    finally:
+        driver.quit()
+ 
+if __name__ == "__main__":
+    main()
+`;
+  }
+ 
+  let generatedScript = '';
+ 
+  function startAutomation() {
+    const email = document.getElementById('li-email').value.trim();
+    const password = document.getElementById('li-pass').value.trim();
+    const titles = getTitles();
+    const location = document.getElementById('li-loc').value.trim();
+    const maxApps = parseInt(document.getElementById('max-apps').value);
+    const phone = document.getElementById('li-phone').value.trim();
+    const slowMode = document.getElementById('opt-slow').checked;
+    const fileInput = document.getElementById('resume-file');
+    const resumeName = fileInput.files[0] ? fileInput.files[0].name : '';
+ 
+    if (!email || !password) {
+      alert('Please enter your LinkedIn email and password.');
+      return;
+    }
+    if (titles.length === 0) {
+      alert('Please add at least one job title.');
+      return;
+    }
+ 
+    const config = { email, password, titles, location, maxApps, phone, slowMode, resumeName };
+    generatedScript = generateScript(config);
+ 
+    document.getElementById('code-output').textContent = generatedScript;
+    document.getElementById('output-modal').style.display = 'flex';
+ 
+    // Simulate progress in sidebar
+    simulateProgress(maxApps);
+  }
+ 
+  function simulateProgress(max) {
+    const dot = document.getElementById('status-dot');
+    const title = document.getElementById('status-title');
+    const sub = document.getElementById('status-sub');
+    const log = document.getElementById('job-log');
+    const fill = document.getElementById('prog-fill');
+    const pct = document.getElementById('prog-pct');
+    const cntA = document.getElementById('cnt-applied');
+    const cntS = document.getElementById('cnt-skipped');
+    const cntT = document.getElementById('cnt-total');
+ 
+    dot.className = 'status-dot running';
+    title.textContent = 'Automation ready';
+    sub.textContent = 'Script generated — run it in VS Code';
+    log.innerHTML = '';
+ 
+    const mockJobs = [
+      { t: 'Backend Developer — Infosys', s: 'applied' },
+      { t: 'Python Engineer — TCS Digital', s: 'applied' },
+      { t: 'Node.js Developer — Wipro', s: 'skipped' },
+      { t: 'Django Developer — Zoho Corp', s: 'applied' },
+      { t: 'API Engineer — Razorpay', s: 'applied' },
+      { t: 'Backend Intern — Swiggy Tech', s: 'applied' },
+      { t: 'Software Engineer II — PhonePe', s: 'skipped' },
+      { t: 'Backend Developer — Freshworks', s: 'applied' },
+    ];
+ 
+    let i = 0, applied = 0, skipped = 0;
+    const icons = { applied: { emoji: '✅', cls: 'success', badge: 'Applied', badgeCls: 'applied' }, skipped: { emoji: '⏩', cls: 'skip', badge: 'Skipped', badgeCls: 'skipped' } };
+ 
+    const interval = setInterval(() => {
+      if (i >= Math.min(mockJobs.length, max)) {
+        clearInterval(interval);
+        dot.className = 'status-dot done';
+        title.textContent = 'Preview complete';
+        sub.textContent = 'Run the script to apply for real';
+        return;
+      }
+      const job = mockJobs[i];
+      const ic = icons[job.s];
+      if (job.s === 'applied') applied++;
+      else skipped++;
+      i++;
+ 
+      const item = document.createElement('div');
+      item.className = 'log-item';
+      item.innerHTML = `
+        <div class="log-icon ${ic.cls}">${ic.emoji}</div>
+        <div class="log-body">
+          <div class="log-title">${job.t}</div>
+          <div class="log-meta">Just now</div>
+        </div>
+        <span class="log-badge ${ic.badgeCls}">${ic.badge}</span>
+      `;
+      log.prepend(item);
+ 
+      cntA.textContent = applied;
+      cntS.textContent = skipped;
+      cntT.textContent = i;
+      const p = Math.round((i / Math.min(mockJobs.length, max)) * 100);
+      fill.style.width = p + '%';
+      pct.textContent = p + '%';
+    }, 900);
+  }
+ 
+  function closeModal() {
+    document.getElementById('output-modal').style.display = 'none';
+  }
+ 
+  function copyCode() {
+    navigator.clipboard.writeText(generatedScript).then(() => {
+      const btn = event.target;
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy code', 2000);
+    });
+  }
+ 
+  function downloadScript() {
+    const blob = new Blob([generatedScript], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'linkedin_autoapply.py';
+    a.click();
+  }
+</script>
+</body>
+</html
